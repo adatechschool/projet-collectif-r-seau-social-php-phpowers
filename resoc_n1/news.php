@@ -45,6 +45,7 @@
                 exit();
             }?>
             <?php include 'snippets/posts.php'?>
+
         </main>
     </div>
 </body>
