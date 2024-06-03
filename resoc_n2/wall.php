@@ -1,32 +1,107 @@
-<?php include 'snippets/header.php'?>
-    <div id="wrapper">
+<?php include 'snippets/header.php' ?>
+<div id="wrapper">
+    
+    <?php
+    $userId = intval($_GET['user_id']); ?>
+    <!-- $_SESSION['connected_id']=$user['id']; -->
 
-        <?php
-        $userId = intval($_GET['user_id']); ?>
 
-        <aside>
+<aside>
+    <?php
+        /**
+         * Etape 3: récupérer le nom de l'utilisateur
+         */
+        $laQuestionEnSql = "SELECT * FROM users WHERE id= '$userId' ";
+        $lesInformations = $mysqli->query($laQuestionEnSql);
+        $user = $lesInformations->fetch_assoc();
+        // echo "<pre>" . print_r($user, 1) . "</pre>";
+        ?>
+        <img src="user.jpg" alt="Portrait de l'utilisatrice" />
+        <section>
+            <h3>Présentation</h3>
+            <p>Sur cette page vous trouverez tous les message de l'utilisatrice : <?php echo $user['alias'] ?>
+        </p>
+    </section>
+</aside>
+<main>
+        <article>
+            <h2>Poster un message</h2>
             <?php
             /**
-             * Etape 3: récupérer le nom de l'utilisateur
+             * BD
              */
-            $laQuestionEnSql = "SELECT * FROM users WHERE id= '$userId' ";
+        
+            $mysqli = new mysqli("localhost", "root", "root", "socialnetwork");
+            /**
+             * Récupération de la liste des auteurs
+             */
+            $listAuteurs = [];
+            $laQuestionEnSql = "SELECT * FROM users";
             $lesInformations = $mysqli->query($laQuestionEnSql);
-            $user = $lesInformations->fetch_assoc();
-            // echo "<pre>" . print_r($user, 1) . "</pre>";
-            ?>
-            <img src="user.jpg" alt="Portrait de l'utilisatrice" />
-            <section>
-                <h3>Présentation</h3>
-                <p>Sur cette page vous trouverez tous les message de l'utilisatrice : <?php echo $user['alias'] ?>
-                </p>
-            </section>
-        </aside>
-        <main>
-            <?php
-               /**
-             * Etape 3: récupérer tous les messages de l'utilisatrice
+            while ($user = $lesInformations->fetch_assoc()) {
+                $listAuteurs[$user['id']] = $user['alias'];
+            }
+        
+        
+            /**
+             * TRAITEMENT DU FORMULAIRE
              */
-            $laQuestionEnSql = "
+            // Etape 1 : vérifier si on est en train d'afficher ou de traiter le formulaire
+            // si on recoit un champs email rempli il y a une chance que ce soit un traitement
+            $enCoursDeTraitement = isset($_POST['auteur']);
+            if ($enCoursDeTraitement) {
+                // Etape 2: récupérer ce qu'il y a dans le formulaire @todo: c'est là que votre travaille se situe
+                // observez le résultat de cette ligne de débug (vous l'effacerez ensuite)
+                // et complétez le code ci dessous en remplaçant les ???
+            
+                $authorId = $_POST['auteur'];
+                $postContent = $_POST['message'];
+        
+        
+                //Etape 3 : Petite sécurité
+                $authorId = intval($mysqli->real_escape_string($authorId));
+                $postContent = $mysqli->real_escape_string($postContent);
+                //Etape 4 : construction de la requete
+                $permalink = 'post-' . uniqid(); // Generate a unique permalink
+                $lInstructionSql = "INSERT INTO posts "
+                    . "(id, user_id, content, created, permalink, post_id) "
+                    . "VALUES (NULL, "
+                    . $authorId . ", "
+                    . "'" . $postContent . "', "
+                    . "NOW(), "
+                    . "'" . $permalink . "', "
+                    . "NULL);";
+        
+                // Etape 5 : execution
+                $ok = $mysqli->query($lInstructionSql);
+                if (!$ok) {
+                    echo "Impossible d'ajouter le message: " . $mysqli->error;
+                } else {
+                    echo "Message posté en tant que :" . $listAuteurs[$authorId];
+                }
+            }
+            ?>
+            <form action="usurpedpost.php" method="post">
+                <input type='hidden' name='???' value='achanger'>
+                <dl>
+                    <dt><label for='auteur'>Auteur</label></dt>
+                    <dd><select name='auteur'>
+                            <?php
+                            foreach ($listAuteurs as $id => $alias)
+                                echo "<option value='$id'>$alias</option>";
+                            ?>
+                        </select></dd>
+                    <dt><label for='message'>Message</label></dt>
+                    <dd><textarea name='message'></textarea></dd>
+                </dl>
+                <input type='submit'>
+            </form>
+        </article>
+        <?php
+        /**
+         * Etape 3: récupérer tous les messages de l'utilisatrice
+         */
+        $laQuestionEnSql = "
                     SELECT posts.content, posts.created, users.alias as author_name,
                     users.id as user_id,
                     COUNT(likes.id) as like_number, GROUP_CONCAT(DISTINCT tags.label) AS taglist 
@@ -39,15 +114,15 @@
                     GROUP BY posts.id
                     ORDER BY posts.created DESC  
                     ";
-            $lesInformations = $mysqli->query($laQuestionEnSql);
-            if (!$lesInformations) {
-                echo ("Échec de la requete : " . $mysqli->error);
-            }
-            ?>
+        $lesInformations = $mysqli->query($laQuestionEnSql);
+        if (!$lesInformations) {
+            echo ("Échec de la requete : " . $mysqli->error);
+        }
+        ?>
 
-            <?php include 'snippets/posts.php'?>
-        </main>
-    </div>
+        <?php include 'snippets/posts.php' ?>
+    </main>
+</div>
 </body>
 
 </html>

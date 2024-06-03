@@ -1,6 +1,3 @@
-<?php
-session_start();
-?>
 <?php include 'snippets/header.php'?>
 
         <div id="wrapper" >
@@ -18,7 +15,6 @@ session_start();
                      * BD
                      */
 
- // ***j'ai enlevé "_test" après socialnetwork
                     $mysqli = new mysqli("localhost", "root", "root", "socialnetwork");
                     /**
                      * Récupération de la liste des auteurs
@@ -40,20 +36,15 @@ session_start();
                     $enCoursDeTraitement = isset($_POST['auteur']);
                     if ($enCoursDeTraitement)
                     {
-                        // on ne fait ce qui suit que si un formulaire a été soumis.
                         // Etape 2: récupérer ce qu'il y a dans le formulaire @todo: c'est là que votre travaille se situe
                         // observez le résultat de cette ligne de débug (vous l'effacerez ensuite)
                         // et complétez le code ci dessous en remplaçant les ???
-                        
-// *** J'ai remplacé les ??? par auteur et message (trouvés dans le echo ci dessous)
 
-                        // echo "<pre>" . print_r($_POST, 1) . "</pre>";
                         $authorId = $_POST['auteur'];
                         $postContent = $_POST['message'];
 
 
                         //Etape 3 : Petite sécurité
-                        // pour éviter les injection sql : https://www.w3schools.com/sql/sql_injection.asp
                         $authorId = intval($mysqli->real_escape_string($authorId));
                         $postContent = $mysqli->real_escape_string($postContent);
                         //Etape 4 : construction de la requete
@@ -67,7 +58,6 @@ session_start();
                                         . "'" . $permalink . "', "
                                         . "NULL);";
                         
-                        //echo $lInstructionSql;
                         // Etape 5 : execution
                         $ok = $mysqli->query($lInstructionSql);
                         if ( ! $ok)
