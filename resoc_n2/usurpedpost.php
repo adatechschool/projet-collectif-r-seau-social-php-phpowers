@@ -1,33 +1,7 @@
 <?php
 session_start();
 ?>
-<!doctype html>
-<html lang="fr">
-    <head>
-        <meta charset="utf-8">
-        <title>ReSoC - Post d'usurpateur</title> 
-        <meta name="author" content="Julien Falconnet">
-        <link rel="stylesheet" href="style.css"/>
-    </head>
-    <body>
-        <header>
-            <img src="resoc.jpg" alt="Logo de notre réseau social"/>
-            <nav id="menu">
-                <a href="news.php">Actualités</a>
-                <a href="wall.php?user_id=5">Mur</a>
-                <a href="feed.php?user_id=5">Flux</a>
-                <a href="tags.php?tag_id=1">Mots-clés</a>
-            </nav>
-            <nav id="user">
-                <a href="#">Profil</a>
-                <ul>
-                    <li><a href="settings.php?user_id=5">Paramètres</a></li>
-                    <li><a href="followers.php?user_id=5">Mes suiveurs</a></li>
-                    <li><a href="subscriptions.php?user_id=5">Mes abonnements</a></li>
-                </ul>
-
-            </nav>
-        </header>
+<?php include 'snippets/header.php'?>
 
         <div id="wrapper" >
 
@@ -73,7 +47,7 @@ session_start();
                         
 // *** J'ai remplacé les ??? par auteur et message (trouvés dans le echo ci dessous)
 
-                        echo "<pre>" . print_r($_POST, 1) . "</pre>";
+                        // echo "<pre>" . print_r($_POST, 1) . "</pre>";
                         $authorId = $_POST['auteur'];
                         $postContent = $_POST['message'];
 
@@ -83,16 +57,17 @@ session_start();
                         $authorId = intval($mysqli->real_escape_string($authorId));
                         $postContent = $mysqli->real_escape_string($postContent);
                         //Etape 4 : construction de la requete
+                        $permalink = 'post-' . uniqid(); // Generate a unique permalink
                         $lInstructionSql = "INSERT INTO posts "
-                                . "(id, user_id, content, created, permalink, post_id) "
-                                . "VALUES (NULL, "
-                                . $authorId . ", "
-                                . "'" . $postContent . "', "
-                                . "NOW(), "
-                                . "'', "
-                                . "NULL);"
-                                ;
-                        echo $lInstructionSql;
+                                        . "(id, user_id, content, created, permalink, post_id) "
+                                        . "VALUES (NULL, "
+                                        . $authorId . ", "
+                                        . "'" . $postContent . "', "
+                                        . "NOW(), "
+                                        . "'" . $permalink . "', "
+                                        . "NULL);";
+                        
+                        //echo $lInstructionSql;
                         // Etape 5 : execution
                         $ok = $mysqli->query($lInstructionSql);
                         if ( ! $ok)
