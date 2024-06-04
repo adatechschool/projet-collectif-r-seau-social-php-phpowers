@@ -6,6 +6,8 @@
     <title>ReSoC</title>
     <meta name="author" content="Julien Falconnet">
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 
 <body>
@@ -19,7 +21,9 @@
             <a href="usurpedpost.php">Message</a>
         </nav>
         <nav id="user">
-            <a href="#">Profil</a>
+            <a href="#"><span class="material-symbols-outlined">
+                    account_circle
+                </span></a>
             <ul>
                 <li><a href="settings.php?user_id=5">Paramètres</a></li>
                 <li><a href="followers.php?user_id=5">Mes suiveurs</a></li>
@@ -27,10 +31,9 @@
             </ul>
         </nav>
     </header>
-    
-    // Etape 2: se connecter à la base de donnée
-    <?php
-        $mysqli = new mysqli("localhost", "root", "root", "socialnetwork");
-        ?>
 
-<?php session_start();?>
+    <?php
+    $mysqli = new mysqli("localhost", "root", "root", "socialnetwork");
+    ?>
+
+    <?php session_start(); ?>
