@@ -1,33 +1,33 @@
 <?php include 'snippets/header.php' ?>
-<div id="wrapper">
-    
-    <?php
-    $userId = intval($_GET['user_id']); ?>
+    <div id="wrapper">
+
+        <?php
+        $userId = intval($_GET['user_id']); ?>
     <!-- $_SESSION['connected_id']=$user['id']; -->
 
 
-<aside>
-    <?php
-        /**
-         * Etape 3: récupérer le nom de l'utilisateur
-         */
-        $laQuestionEnSql = "SELECT * FROM users WHERE id= '$userId' ";
-        $lesInformations = $mysqli->query($laQuestionEnSql);
-        $user = $lesInformations->fetch_assoc();
-        // echo "<pre>" . print_r($user, 1) . "</pre>";
-        ?>
-        <img src="user.jpg" alt="Portrait de l'utilisatrice" />
-        <section>
-            <h3>Présentation</h3>
-            <p>Sur cette page vous trouverez tous les message de l'utilisatrice : <?php echo $user['alias'] ?>
-        </p>
-    </section>
-</aside>
-<main>
+        <aside>
+            <?php
+            /**
+             * Etape 3: récupérer le nom de l'utilisateur
+             */
+            $laQuestionEnSql = "SELECT * FROM users WHERE id= '$userId' ";
+            $lesInformations = $mysqli->query($laQuestionEnSql);
+            $user = $lesInformations->fetch_assoc();
+            // echo "<pre>" . print_r($user, 1) . "</pre>";
+            ?>
+            <img src="user.jpg" alt="Portrait de l'utilisatrice" />
+            <section>
+                <h3>Présentation</h3>
+                <p>Sur cette page vous trouverez tous les message de l'utilisatrice : <?php echo $user['alias'] ?>
+                </p>
+            </section>
+        </aside>
+        <main>
         <article>
             <h2>Poster un message</h2>
             <?php
-            /**
+               /**
              * BD
              */
         
@@ -100,8 +100,8 @@
         <?php
         /**
          * Etape 3: récupérer tous les messages de l'utilisatrice
-         */
-        $laQuestionEnSql = "
+             */
+            $laQuestionEnSql = "
                     SELECT posts.content, posts.created, users.alias as author_name,
                     users.id as user_id,
                     COUNT(likes.id) as like_number, GROUP_CONCAT(DISTINCT tags.label) AS taglist 
@@ -114,15 +114,22 @@
                     GROUP BY posts.id
                     ORDER BY posts.created DESC  
                     ";
-        $lesInformations = $mysqli->query($laQuestionEnSql);
-        if (!$lesInformations) {
-            echo ("Échec de la requete : " . $mysqli->error);
-        }
-        ?>
+
+                    if (isset($_SESSION["user_id"])) {
+                        if ($_SESSION['connected_id'] == 'true') {
+                            session_reset();
+                        }
+                    }
+
+            $lesInformations = $mysqli->query($laQuestionEnSql);
+            if (!$lesInformations) {
+                echo ("Échec de la requete : " . $mysqli->error);
+            }
+            ?>
 
         <?php include 'snippets/posts.php' ?>
-    </main>
-</div>
+        </main>
+    </div>
 </body>
 
 </html>
