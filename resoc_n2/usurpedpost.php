@@ -43,7 +43,6 @@
                         $authorId = $_POST['auteur'];
                         $postContent = $_POST['message'];
 
-
                         //Etape 3 : Petite sécurité
                         $authorId = intval($mysqli->real_escape_string($authorId));
                         $postContent = $mysqli->real_escape_string($postContent);
